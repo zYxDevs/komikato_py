@@ -10,14 +10,8 @@ def index(request):
 def home(request):
     response = tools.get(f"{baseURL}")
     soup = BeautifulSoup(response.text, "html")
-    
-    obj = {}
-    obj["title"] = soup.title.text
-    
+
+    obj = {"title": soup.title.text}
     newest = soup.find_all_next(class_="whites")
     return soup.prettify()
-    
-            
-            
-    return obj
     

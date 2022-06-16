@@ -16,7 +16,7 @@ def search(request, query):
     return render(request, 'mangabat/search.html', context=mangabat.search(request, query))
 
 def genres(request, type=None, pagination=1):
-    if type == None and pagination == 1:
+    if type is None and pagination == 1:
         return render(request, 'mangabat/genres.html', context=mangabat.genres(request, type, pagination))
     else:
         return render(request, 'mangabat/genre.html', context=mangabat.genres(request, type, pagination))
