@@ -8,23 +8,19 @@ proxq = "?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=id"
 
 def index(request):
     response = tools.get(baseURL)
-    
-    resolve = {
+
+    return {
         'status': 'success',
         'message': 'Welcome to Komikindo API',
         'statusCode': response.status_code,
     }
-    
-    return resolve
 
 def home(request):
     response = tools.get(baseURL)
     data = response.text.replace(prox, baseURL).replace(proxq, "")
     soup = BeautifulSoup(data, 'html.parser')
-    
-    obj = {}
-    obj["url"] = request.build_absolute_uri()
-    obj["menu"] = []
+
+    obj = {"url": request.build_absolute_uri(), "menu": []}
     mangas_menu = soup.find(id="menu-second-menu").find_all("li")
     for manga in mangas_menu:
         name = manga.find("a").text
@@ -32,15 +28,15 @@ def home(request):
             'url': manga.find("a").get("href"),
             'endpoint': manga.find("a").get("href").replace(baseURL, "").replace(proxq, "")
         }
-        
+
         obj["menu"].append({ 'name': name, 'link': link })
-        
+
     obj["body"] = {}
     mangas_menu = soup.find_all("section", {"class": "whites"})
     for manga in mangas_menu:
         if (manga.find(id="informasi")):
             continue
-        
+
         popular = manga.find_all("div", {"class": "mangapopuler"})
         if (len(popular) > 0):
             obj["body"]["popular"] = []
@@ -60,7 +56,7 @@ def home(request):
                 }
                 obj["body"]["popular"].append({ 'name': name, 'thumb': thumb, 'link': link, 'last_upload': last_upload, 'last_chapter': last_chapter })
             continue
-            
+
         latest = manga.find_all("div", {"class": "latestupdate-v2"})
         if (len(latest) > 0):
             obj["body"]["latest"] = []
@@ -78,27 +74,25 @@ def home(request):
     return obj
 
 def daftar_komik(request, page):
-    response = tools.get(baseURL + 'daftar-komik/page/' + str(page))
+    response = tools.get(f'{baseURL}daftar-komik/page/{str(page)}')
     data = response.text.replace(prox, baseURL).replace(proxq, "")
     soup = BeautifulSoup(data, 'html.parser')
-    
-    obj = {}
+
     mangas = soup.find_all("div", {"class": "animepost"})
-    
-    obj["url"] = request.build_absolute_uri()
-    obj["mangas"] = []
+
+    obj = {"url": request.build_absolute_uri(), "mangas": []}
     for manga in mangas:
-        
+
         name = manga.find("a", itemprop="url").get("title")
         thumb = manga.find("img").get("src").split("?")[0]
         link = {
             'url': manga.find("a", itemprop="url").get("href"),
             'endpoint': manga.find("a", itemprop="url").get("href").replace(baseURL, "").replace(proxq, "")
         }
-        
+
         obj["mangas"].append({ 'name': name, 'thumb': thumb, 'link': link })
-    
-    obj["pagination"] = []    
+
+    obj["pagination"] = []
     pagination = soup.find_all(class_="page-numbers")
     for page in pagination:
         name = page.text
@@ -106,33 +100,31 @@ def daftar_komik(request, page):
         endpoint = None
         if (url):
             endpoint = url.replace(baseURL, "").replace(proxq, "")
-            
+
         obj["pagination"].append({'name': name, 'url': url, 'endpoint': endpoint })
 
     return obj
 
 def komik_terbaru(request, page):
-    response = tools.get(baseURL + 'komik-terbaru/page/' + str(page))
+    response = tools.get(f'{baseURL}komik-terbaru/page/{str(page)}')
     data = response.text.replace(prox, baseURL).replace(proxq, "")
     soup = BeautifulSoup(data, 'html.parser')
-    
-    obj = {}
+
     mangas = soup.find_all("div", {"class": "animepost"})
-    
-    obj["url"] = request.build_absolute_uri()
-    obj["mangas"] = []
+
+    obj = {"url": request.build_absolute_uri(), "mangas": []}
     for manga in mangas:
-        
+
         name = manga.find("a", itemprop="url").get("title")
         thumb = manga.find("img").get("src").split("?")[0]
         link = {
             'url': manga.find("a", itemprop="url").get("href"),
             'endpoint': manga.find("a", itemprop="url").get("href").replace(baseURL, "").replace(proxq, "")
         }
-        
+
         obj["mangas"].append({ 'name': name, 'thumb': thumb, 'link': link })
-    
-    obj["pagination"] = []    
+
+    obj["pagination"] = []
     pagination = soup.find_all(class_="page-numbers")
     for page in pagination:
         name = page.text
@@ -140,7 +132,7 @@ def komik_terbaru(request, page):
         endpoint = None
         if (url):
             endpoint = url.replace(baseURL, "").replace(proxq, "")
-            
+
         obj["pagination"].append({'name': name, 'url': url, 'endpoint': endpoint })
 
     return obj
@@ -148,39 +140,35 @@ def komik_terbaru(request, page):
 def komik(request, type, page):
     response = None
     if (type == "manga"):
-        response = tools.get(baseURL + 'manga/page/' + str(page))
-    elif (type == "manhua"):
-        response = tools.get(baseURL + 'manhua/page/' + str(page))
-    elif (type == "manhwa"):
-        response = tools.get(baseURL + 'manhwa/page/' + str(page))
-    elif (type == "smut"):
-        response = tools.get(baseURL + 'konten/smut/page/' + str(page))
+        response = tools.get(f'{baseURL}manga/page/{str(page)}')
+    elif type == "manhua":
+        response = tools.get(f'{baseURL}manhua/page/{str(page)}')
+    elif type == "manhwa":
+        response = tools.get(f'{baseURL}manhwa/page/{str(page)}')
+    elif type == "smut":
+        response = tools.get(f'{baseURL}konten/smut/page/{str(page)}')
     else:
         return None
-    
+
     data = response.text.replace(prox, baseURL).replace(proxq, "")
     soup = BeautifulSoup(data, 'html.parser')
-    
-    obj = {}
-    obj["url"] = request.build_absolute_uri()
+
+    obj = {"url": request.build_absolute_uri()}
     mangas = soup.find_all("div", {"class": "animepost"})
     obj["type"] = type
     obj["mangas"] = []
     for manga in mangas:
         name = manga.find("a").get("title")
         thumb = manga.find(class_="limit").find("img")
-        if thumb != None:
-            thumb = thumb.get("src").split("?")[0]
-        else:
-            thumb = "404"
+        thumb = thumb.get("src").split("?")[0] if thumb != None else "404"
         link = {
             'url': manga.find("a").get("href"),
             'endpoint': manga.find("a").get("href").replace(baseURL, "").replace(proxq, "")
         }
-        
+
         obj["mangas"].append({ 'name': name, 'thumb': thumb, 'link': link })
-    
-    obj["pagination"] = []    
+
+    obj["pagination"] = []
     pagination = soup.find_all(class_="page-numbers")
     for page in pagination:
         name = page.text
@@ -188,7 +176,7 @@ def komik(request, type, page):
         endpoint = None
         if (url):
             endpoint = url.replace(baseURL, "").replace("konten/", "").replace(proxq, "")
-            
+
         obj["pagination"].append({'name': name, 'url': url, 'endpoint': endpoint })
 
     return obj

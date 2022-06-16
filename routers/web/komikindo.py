@@ -13,20 +13,20 @@ def search(request, query):
 
 def chapter(request, endpoint):
     chapter = komikindo.chapter(request, endpoint)
-    if chapter == None:
+    if chapter is None:
         return render(request, '404.html')
     return render(request, 'komikindo2/chapter.html', context=chapter)
 
 def komik(request, page=1):
     type = request.resolver_match.url_name
     komik = komikindo.komik(request, type, page)
-    if komik == None:
+    if komik is None:
         return render(request, '404.html')
     return render(request, 'komikindo2/komikk.html', context=komik)
 
 def komik_detail(request, endpoint):
     komik_detail = komikindo.komik_detail(request, endpoint)
-    if komik_detail == None:
+    if komik_detail is None:
         return render(request, '404.html')
     return render(request, 'komikindo2/komik.html', context=komik_detail)
 

@@ -15,10 +15,8 @@ def home(request):
     response = tools.get(baseURL)
     data = response.text.replace(prox, baseURL).replace(proxq, "")
     soup = BeautifulSoup(data, "html.parser")
-    
-    obj = {}
-    obj["url"] = request.build_absolute_uri()
-    obj["ongoing"] = []
+
+    obj = {"url": request.build_absolute_uri(), "ongoing": []}
     animes = soup.find(class_="venz").find_all("li")
     for anime in animes:
         obj["ongoing"].append({
@@ -30,8 +28,8 @@ def home(request):
             'url': anime.find(class_="thumb").find("a").get("href"),
             'endpoint': anime.find(class_="thumb").find("a").get("href").replace(baseURL, "").replace(prox, "").replace(proxq, "")
         })
-    
-    
+
+
     obj["complete"] = []
     animes = soup.find(class_="rseries").find_all(class_="venz")[1].find_all("li")
     for anime in animes:
@@ -44,28 +42,26 @@ def home(request):
             'url': anime.find(class_="thumb").find("a").get("href"),
             'endpoint': anime.find(class_="thumb").find("a").get("href").replace(baseURL, "").replace(prox, "").replace(proxq, "")
         })
-        
-        
+
+
     return obj
 
 def search(request, query):
-    response = tools.get(baseURL + "/?s=" + query.replace(" ", "+") + "&post_type=anime")
+    response = tools.get(
+        f"{baseURL}/?s=" + query.replace(" ", "+") + "&post_type=anime"
+    )
+
     data = response.text.replace(prox, baseURL).replace(proxq, "")
     soup = BeautifulSoup(data, "html.parser")
-    
-    obj = {}
-    obj["url"] = request.build_absolute_uri()
-    obj["animes"] = []
+
+    obj = {"url": request.build_absolute_uri(), "animes": []}
     animes = soup.find(class_="chivsrc").find_all("li")
     for anime in animes:
-        genres = []
         genress = anime.find(class_="set").find_all("a")
-        for genre in genress:
-            genres.append({
-                'name': genre.text,
-                'url': genre.get("href")
-            })
-            
+        genres = [
+            {'name': genre.text, 'url': genre.get("href")} for genre in genress
+        ]
+
         obj["animes"].append({
             'name': anime.find("h2").find("a").text,
             'thumb': anime.find("img").get("src"),
@@ -74,7 +70,7 @@ def search(request, query):
             'url': anime.find("h2").find("a").get("href"),
             'endpoint': anime.find("h2").find("a").get("href").replace(baseURL, "").replace(prox, "").replace(proxq, "")
         })
-        
+
     return obj
 
 def detail(request, endpoint):

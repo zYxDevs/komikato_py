@@ -43,23 +43,21 @@ def get(url, options={}):
 def post(url, data, options={}):
     response = req.post(url, data=data, headers=options.get("headers", {}))
     status = response.status_code
-    if status == 200:
-        return response
-    else:
+    if status != 200:
         url_base64 = base64.b64encode(url.encode('utf-8'))
         # add to data
-        data = data + f"&url={url_base64.decode('utf-8')}"
+        data = f"{data}&url={url_base64.decode('utf-8')}"
         print(data)
         response = req.post("https://bypass.kato-rest.us/", data=data, headers=options.get("headers", {}))
-        
-        return response
+
+    return response
     
     
 def get_media_src(url):
     response = get(url)
     data = response.text
     soup = BeautifulSoup(data, "html.parser")
-    
+
     src = None
     src1 = soup.find("source")
     src2 = data.split("sources: [")
@@ -76,10 +74,7 @@ def reverse_proxy(url):
     #decode base64
     url = base64.b64decode(url).decode('utf-8')
 
-    #return as video
-    response = req.get(url,)
-    
-    return response
+    return req.get(url,)
 
 def to_base64(url):
     url = base64.b64encode(url.encode('utf-8'))
